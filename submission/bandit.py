@@ -2,14 +2,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 
+def extract_probs(instance):
+	pass
+
 class arm:
 	def __init__(self, rs, probs):
-		self.rew = rs
+		self.rewards = rs
 		self.probs = probs
+		self.n = len(rs)
 
-	def pull():
+	def pull(self):
 		rnd = np.random.random_sample()
-		
+		cur = 0
+		for i, prob in enumerate(self.probs):
+			cur += prob
+			if rnd < cur:
+				return self.rewards[i]
+		return self.rewards[self.n-1]
+
+class multiarm_bandit:
+	def __init__(self, list_arm):
+		self.arms = list_arm
+	
+
+
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
