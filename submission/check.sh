@@ -43,7 +43,7 @@ sleep 1
 i=$((i + 1))
 
 echo "Test $i"
-python bandit.py --instance ../instances/instances-task3/i1-.txt --algorithm alg-t3 --randomSeed 10 --epsilon 0.02 --scale 2 --threshold 0 --horizon 53
+python bandit.py --instance ../instances/instances-task3/i-1.txt --algorithm alg-t3 --randomSeed 10 --epsilon 0.02 --scale 2 --threshold 0 --horizon 53
 sleep 1
 i=$((i + 1))
 
