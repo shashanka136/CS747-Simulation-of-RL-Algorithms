@@ -91,16 +91,17 @@ class eps_greedy:
 		total_regret = 0.
 		regrets = []
 		j = 0
-		itrloop = np.random.random(hz)
+		# itrloop = np.random.random(hz)
 		# print(itrloop)
 		for i in range(hz):
-			if itrloop[i] < eps:
+			# if itrloop[i] < eps:
+			if np.random.random() < eps:
 				total_regret += self.bandit.pstar - self.pull_uniform()
 			else:
 				rnd = np.argmax(self.emp_mean)
 				total_regret += self.bandit.pstar - self.pull_arm(rnd)
 			if j < len(hzs) and hzs[j] == i+1:
-				# print(i, total_regret)
+				print(i, total_regret)
 				regrets.append(total_regret)
 				j += 1
 		return regrets
@@ -153,7 +154,7 @@ class ucb:
 			rnd = np.argmax(self.ucb_val)
 			total_regret += self.bandit.pstar - self.pull_arm(rnd)
 			if j < len(hzs) and hzs[j] == i+1:
-				# print(i, total_regret)
+				print(i, total_regret)
 				regrets.append(total_regret)
 				j += 1
 		return regrets
@@ -216,7 +217,7 @@ class kl_ucb:
 			total_regret += self.bandit.pstar - self.pull_arm(rnd)
 
 			if j < len(hzs) and hzs[j] == i+1:
-				# print(i, total_regret)
+				print(i, total_regret)
 				regrets.append(total_regret)
 				j += 1
 		return regrets
@@ -257,7 +258,7 @@ class thompson_sampling:
 			rnd = np.argmax(x)
 			total_regret += self.bandit.pstar - self.pull_arm(rnd)
 			if j < len(hzs) and hzs[j] == itr+1:
-				# print(itr, total_regret)
+				print(itr, total_regret)
 				regrets.append(total_regret)
 				j += 1
 		return regrets
@@ -308,15 +309,15 @@ class algo_t4:
 			total_highs += rew
 			total_regret += self.bandit.pstar - rew
 			if j < len(hzs) and hzs[j] == itr+1:
-				# print(itr, total_regret)
+				print(itr, total_regret)
 				regrets.append(total_regret)
 				highs.append(total_highs)
 				j += 1
 		return regrets, highs
 
-def run_t1(bandit,instance_num):
-	algos = [eps_greedy, ucb, kl_ucb, thompson_sampling]
-	algos = [algo(bandit) for algo in algos]
+def run_t1(instance_num):
+	algos = [eps_greedy]#, ucb, kl_ucb, thompson_sampling]
+	algos = [algo(multiarm_bandit(extract_probs(instance(1,instance_num)))) for algo in algos]
 	hzs = [100, 400, 1600, 6400, 25600, 102400]
 	seeds = [i for i in range(50)]
 	regrets = np.zeros((len(algos), len(hzs)))
@@ -325,12 +326,13 @@ def run_t1(bandit,instance_num):
 	for j,seed in enumerate(seeds):
 		for i,alg in enumerate(algos):
 			current = np.array(alg.algo(0.02, 2, hzs[-1], seed, hzs))
+
 			for k,hz in enumerate(hzs):
 				print(output + alg.name + ', ' + str(seed) + ', ' + \
 					str(0.02) + ', ' + str(2) + ', ' + str(0) + ', ' + \
 					str(hz) + ', ' + str(current[k]) + ', 0', file=fl)
 			regrets[i]  += current
-			print(j,i, alg.name)
+			print(j,i, alg.name, current)
 	
 	for i in range(len(algos)):
 		regrets[i] /= len(seeds)
@@ -371,7 +373,7 @@ def run_t2():
 	regrets /= len(seeds)
 	plt.figure()
 	for ind in instance_nums:
-		print(ind, regrets[ind-1])
+		print(ind, regrets)
 		plt.plot(scales, regrets[ind-1], linestyle = '-', marker = 'o', label = 'Instance ' + str(ind))
 	plt.xlabel('Scale')
 	plt.ylabel('Average Regret')
@@ -443,61 +445,45 @@ def run_t4():
 
 
 if __name__ == '__main__':
-	global output
-	parser = argparse.ArgumentParser()
+	# global output
+	# parser = argparse.ArgumentParser()
 
-	parser.add_argument('--instance', type=str)
-	parser.add_argument('--algorithm', type=str)
-	parser.add_argument('--randomSeed', type=int)
-	parser.add_argument('--epsilon', type=float, default = 0.02)
-	parser.add_argument('--scale', type=float, default = 2)
-	parser.add_argument('--threshold', type=float, default = 0)
-	parser.add_argument('--horizon', type=int)
-	args = parser.parse_args()
-	instance = args.instance
-	algo = args.algorithm
-	seed = args.randomSeed
-	eps = args.epsilon
-	c = args.scale
-	th = args.threshold
-	hz = args.horizon
-	bandit = multiarm_bandit(extract_probs(instance))
-	output = instance + ', ' + algo + ', ' + \
-			str(seed) + ', ' + str(eps) + ', ' + \
-			str(c) + ', ' + str(th) + ', ' + str(hz) + ', '
-	regret = []
-	highs = [0]
-	if algo == "epsilon-greedy-t1":
-		regret = eps_greedy(bandit).algo(eps, c, hz, seed)
-	elif algo == "ucb-t1" or algo == "ucb-t2":
-		regret = ucb(bandit).algo(eps, c, hz, seed)
-	elif algo == "kl-ucb-t1":
-		regret = kl_ucb(bandit).algo(eps, c, hz, seed)
-	elif algo == "thompson-sampling-t1":
-		regret = thompson_sampling(bandit).algo(eps, c, hz, seed)
-	elif algo == "alg-t3":
-		regret = ucb(bandit).algo(eps, 0.2, hz, seed)
-	elif algo == "alg-t4":
-		regret, highs = algo_t4(bandit, th).algo(hz, seed)
-		pass
-	# print(regret)
-	output += str(regret[0]) + ', '+ str(highs[0]) 
-	print(output)
+	# parser.add_argument('--instance', type=str)
+	# parser.add_argument('--algorithm', type=str)
+	# parser.add_argument('--randomSeed', type=int)
+	# parser.add_argument('--epsilon', type=float, default = 0.02)
+	# parser.add_argument('--scale', type=float, default = 2)
+	# parser.add_argument('--threshold', type=float, default = 0)
+	# parser.add_argument('--horizon', type=int)
+	# args = parser.parse_args()
+	# instance = args.instance
+	# algo = args.algorithm
+	# seed = args.randomSeed
+	# eps = args.epsilon
+	# c = args.scale
+	# th = args.threshold
+	# hz = args.horizon
+	# bandit = multiarm_bandit(extract_probs(instance))
+	# output = instance + ', ' + algo + ', ' + \
+	# 		str(seed) + ', ' + str(eps) + ', ' + \
+	# 		str(c) + ', ' + str(th) + ', ' + str(hz) + ', '
+	# regret = []
+	# highs = [0]
+	# if algo == "epsilon-greedy-t1":
+	# 	regret = eps_greedy(bandit).algo(eps, c, hz, seed)
+	# elif algo == "ucb-t1" or algo == "ucb-t2":
+	# 	regret = ucb(bandit).algo(eps, c, hz, seed)
+	# elif algo == "kl-ucb-t1":
+	# 	regret = kl_ucb(bandit).algo(eps, c, hz, seed)
+	# elif algo == "thompson-sampling-t1":
+	# 	regret = thompson_sampling(bandit).algo(eps, c, hz, seed)
+	# elif algo == "alg-t3":
+	# 	regret = ucb(bandit).algo(eps, 0.2, hz, seed)
+	# elif algo == "alg-t4":
+	# 	regret, highs = algo_t4(bandit, th).algo(hz, seed)
+	# 	pass
+	# output += str(regret[0]) + ', '+ str(highs[0]) 
+	# print(output)
 	# run_t4()
-	# for i in range(1,4):
-	# 	bandit = multiarm_bandit(extract_probs(instance(1,i)))
-	# 	run_t1(bandit, i)
-	# for i in range(1,2):
-	# 	bandit = multiarm_bandit(extract_probs(instance(2,i)))
-	# 	run_t2(bandit, i)
-	# 	plt.show()
-	# print(bandit.eps_greedy_algo(0.61, 82, 0))
-	# bandit = ucb(multiarm_bandit(extract_probs("../instances/instances-task1/i-3.txt")))
-	# print(bandit.ucb_algo(82, 0))
-	# bandit = kl_ucb(multiarm_bandit(extract_probs("../instances/instances-task1/i-3.txt")))
-	# print(bandit.kl_ucb_algo(82, 0))
-	# bandit = thompson_sampling(multiarm_bandit(extract_probs("../instances/instances-task1/i-3.txt")))
-	# print(bandit.thompson_algo(82, 0))
-	# extract_probs("../instances/instances-task2/i-1.txt")
-	# extract_probs("../instances/instances-task3/i-1.txt")
-	# extract_probs("../instances/instances-task4/i-1.txt")
+	for i in range(1,4):
+		run_t1(i)
