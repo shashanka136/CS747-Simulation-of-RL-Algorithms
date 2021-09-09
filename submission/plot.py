@@ -49,7 +49,6 @@ if task == 1:
 
   with open(infile, 'r') as f:
     for line in f:
-      print(line)
       out = parse(line)
       ins = out["instance"].split("/")[-1].split("-")[1][0]
       al  = out["algorithm"]
@@ -66,7 +65,7 @@ if task == 1:
     for al, hzobj in insobj.items():
       hz     = list(hzobj.keys())
       regret = list(map(lambda obj: sum(obj.values()) / len(obj), hzobj.values()))
-      plt.plot(hz, regret, label=al, linestyle = '-', marker='o')
+      plt.plot(hz, regret, label=al, marker='o')
 
     plt.title(f'Task{task} -> Instance{ins}')
     plt.xlabel('Horizon')
@@ -101,7 +100,7 @@ if task == 2:
   for ins, insobj in plotobj.items():
     scales    = list(insobj.keys())
     regret    = list(map(lambda obj: sum(obj.values()) / len(obj), insobj.values()))
-    plt.plot(scales, regret, label=f'instance {ins}', linestyle = '-', marker='o')
+    plt.plot(scales, regret, label=f'instance {ins}', marker='o')
 
   plt.title('Task2 -> ucb-t2 for 1e4 Horizon')
   plt.xlabel('Scale')
@@ -143,9 +142,9 @@ if task == 3:
     for c, hzobj in insobj.items():
       hz     = list(hzobj.keys())
       regret = list(map(lambda obj: sum(obj.values()) / len(obj), hzobj.values()))
-      plt.plot(hz, regret, linestyle = '-', marker='o')
+      plt.plot(hz, regret, marker='o')
 
-    plt.title(f'Task{task} Instance{ins}')
+    plt.title(f'Task3 Instance{ins}')
     plt.xlabel('Horizon')
     plt.ylabel('Average Regret')
     plt.xscale('log')
@@ -173,7 +172,6 @@ if task == 4:
       al  = out["algorithm"]
       if int(al[-1]) != task:
         continue
-      print(line)
       th  = out["threshold"]
       hz  = out["horizon"]
       rs  = out["seed"]
@@ -187,7 +185,7 @@ if task == 4:
       hz     = list(hzobj.keys())
       regret = list(map(lambda obj: sum(obj.values()) / len(obj), hzobj.values()))
 
-      plt.plot(hz, regret, linestyle = '-', marker='o')
+      plt.plot(hz, regret, marker='o')
       plt.title(f'Task4 Instance{ins} Threshold = {th}')
       plt.xlabel('Horizon')
       plt.ylabel('Average HIGHS-REGRET')
