@@ -10,10 +10,14 @@ parser.add_argument(
   metavar="file", default=None, 
   help="path to the file to be plotted"
 )
+parser.add_argument(
+  "--task", type=int, default = 1
+)
+
 
 infile = parser.parse_args().file
 assert os.path.isfile(infile), "invalid file path specified"
-task   = infile.split("-")[0][1]
+task = parser.parse_args().task
 
 def parse(line):
   args = line.split(", ")
@@ -26,10 +30,10 @@ def parse(line):
     "threshold"   : float(args[5]),
     "horizon"     : int(args[6]),
     "regret"      : float(args[7]),
-    "highs"       : int(args[8])
+    "highs"       : float(args[8])
   }
 
-if task == "1":
+if task == 1:
   # instance -> algorithm -> horizon -> seed
   plotobj = defaultdict(
     lambda : defaultdict(
@@ -45,9 +49,12 @@ if task == "1":
 
   with open(infile, 'r') as f:
     for line in f:
+      print(line)
       out = parse(line)
       ins = out["instance"].split("/")[-1].split("-")[1][0]
       al  = out["algorithm"]
+      if int(al[-1]) != task:
+        continue
       hz  = out["horizon"]
       rs  = out["seed"]
       plotobj[ins][al][hz][rs] += out["regret"]
@@ -59,18 +66,18 @@ if task == "1":
     for al, hzobj in insobj.items():
       hz     = list(hzobj.keys())
       regret = list(map(lambda obj: sum(obj.values()) / len(obj), hzobj.values()))
-      plt.plot(hz, regret, label=al, marker='o')
+      plt.plot(hz, regret, label=al, linestyle = '-', marker='o')
 
-    plt.title(f'Task {task}, Instance {ins}')
+    plt.title(f'Task{task} -> Instance{ins}')
     plt.xlabel('Horizon')
-    plt.ylabel('Avg Regret')
-    plt.xscale("log")
+    plt.ylabel('Average Regret')
+    plt.xscale('log')
     plt.legend()
-    plt.savefig('../' + 'Task1 -> Instance{ins}.jpeg')
+    plt.savefig(f'../Task1 -> Instance{ins}.jpeg')
 
 
 
-if task == "2":
+if task == 2:
   # instance -> scale -> seed
   plotobj = defaultdict(
     lambda : defaultdict(
@@ -84,6 +91,9 @@ if task == "2":
     for line in f:
       out = parse(line)
       ins = out["instance"].split("/")[-1].split("-")[1][0]
+      al  = out["algorithm"]
+      if int(al[-1]) != task:
+        continue
       c   = out["scale"]
       rs  = out["seed"]
       plotobj[ins][c][rs] += out["regret"]
@@ -91,15 +101,16 @@ if task == "2":
   for ins, insobj in plotobj.items():
     scales    = list(insobj.keys())
     regret    = list(map(lambda obj: sum(obj.values()) / len(obj), insobj.values()))
-    plt.plot(scales, regret, label=f'instance {ins}', marker='o')
+    plt.plot(scales, regret, label=f'instance {ins}', linestyle = '-', marker='o')
 
-  plt.title(f"Task {task}, Algo {out['algorithm']}")
-  plt.xlabel("Scale")
-  plt.ylabel("Avg Regret")
+  plt.title('Task2 -> ucb-t2 for 1e4 Horizon')
+  plt.xlabel('Scale')
+  plt.ylabel('Average Regret')
   plt.legend()
+  plt.savefig('../Task2.jpeg')
 
 
-if task == "3":
+if task == 3:
   # instance -> scale -> horizon -> seed
   plotobj = defaultdict(
     lambda : defaultdict(
@@ -117,6 +128,9 @@ if task == "3":
     for line in f:
       out = parse(line)
       ins = out["instance"].split("/")[-1].split("-")[1][0]
+      al  = out["algorithm"]
+      if int(al[-1]) != task:
+        continue
       c   = out["scale"]
       hz  = out["horizon"]
       rs  = out["seed"]
@@ -129,16 +143,16 @@ if task == "3":
     for c, hzobj in insobj.items():
       hz     = list(hzobj.keys())
       regret = list(map(lambda obj: sum(obj.values()) / len(obj), hzobj.values()))
-      plt.plot(hz, regret, label=f'scale {c}', marker='o')
+      plt.plot(hz, regret, linestyle = '-', marker='o')
 
-    plt.title(f'Task {task}, Instance {ins}')
+    plt.title(f'Task{task} Instance{ins}')
     plt.xlabel('Horizon')
-    plt.ylabel('Avg Regret')
-    plt.xscale("log")
-    plt.legend()
+    plt.ylabel('Average Regret')
+    plt.xscale('log')
+    plt.savefig(f'../Task3_Instance{ins}.jpeg')
 
 
-if task == "4":
+if task == 4:
   # instance -> threshold -> horizon -> seed
   plotobj = defaultdict(
     lambda : defaultdict(
@@ -156,6 +170,10 @@ if task == "4":
     for line in f:
       out = parse(line)
       ins = out["instance"].split("/")[-1].split("-")[1][0]
+      al  = out["algorithm"]
+      if int(al[-1]) != task:
+        continue
+      print(line)
       th  = out["threshold"]
       hz  = out["horizon"]
       rs  = out["seed"]
@@ -169,8 +187,9 @@ if task == "4":
       hz     = list(hzobj.keys())
       regret = list(map(lambda obj: sum(obj.values()) / len(obj), hzobj.values()))
 
-      plt.plot(hz, regret, marker='o')
+      plt.plot(hz, regret, linestyle = '-', marker='o')
       plt.title(f'Task4 Instance{ins} Threshold = {th}')
       plt.xlabel('Horizon')
       plt.ylabel('Average HIGHS-REGRET')
-      plt.xscale("log")
+      plt.xscale('log')
+      plt.savefig(f'../Task4_Instance{ins}_Threshold{th}.jpeg')
