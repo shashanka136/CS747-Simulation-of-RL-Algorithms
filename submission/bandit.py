@@ -322,7 +322,7 @@ def run_t1(instance_num):
 	seeds = [i for i in range(50)]
 	regrets = np.zeros((len(algos), len(hzs)))
 	output = instance(1,instance_num) + ', '
-	fl = open('../task1_instance' + str(instance_num)+ '_output.txt', 'w')
+	fl = open('../Outputs/task1_instance' + str(instance_num)+ '_output.txt', 'w')
 	for j,seed in enumerate(seeds):
 		for i,alg in enumerate(algos):
 			current = np.array(alg.algo(0.02, 2, hzs[-1], seed, hzs))
@@ -345,7 +345,7 @@ def run_t1(instance_num):
 	plt.ylabel('Average Regret')
 	plt.title('Task1 -> Instance' + str(instance_num))
 	plt.legend()
-	plt.savefig('../' + 'Task1 -> Instance' + str(instance_num) + '.jpeg')
+	plt.savefig('../plots/Task1 -> Instance' + str(instance_num) + '.jpeg')
 
 def run_t2():
 	hz = 10000
@@ -359,7 +359,7 @@ def run_t2():
 	# print(scales)
 	seeds = [i for i in range(50)]
 	regrets = np.zeros((len(instance_nums), len(scales)))
-	fl = open('../task2_output.txt', 'w')
+	fl = open('../Outputs/task2_output.txt', 'w')
 	for ind in instance_nums:
 		for j,seed in enumerate(seeds):
 			for i,c in enumerate(scales):
@@ -379,7 +379,7 @@ def run_t2():
 	plt.ylabel('Average Regret')
 	plt.title('Task2 -> ucb-t2 for 1e4 Horizon')
 	plt.legend()
-	plt.savefig('../Task2.jpeg')
+	plt.savefig('../plots/Task2.jpeg')
 
 def run_t3():
 	instance_nums = np.arange(1,3)
@@ -391,7 +391,7 @@ def run_t3():
 	hzs = [100, 400, 1600, 6400, 25600, 102400]
 	seeds = [i for i in range(50)]
 	regrets = np.zeros((len(instance_nums), len(hzs)))
-	fl = open('../task3_output.txt', 'w')
+	fl = open('../Outputs/task3_output.txt', 'w')
 	for ind in instance_nums:
 		for j,seed in enumerate(seeds):
 			current = alg[ind-1].algo(0.02, 0.200, hzs[-1], seed, hzs)
@@ -409,7 +409,7 @@ def run_t3():
 		plt.xlabel('Horizon')
 		plt.ylabel('Average Regret')
 		plt.title('Task3 Instance' + str(ind))
-		plt.savefig('../Task3_Instance' + str(ind) + '.jpeg')
+		plt.savefig('../plots/Task3_Instance' + str(ind) + '.jpeg')
 
 def run_t4():
 	instance_nums = np.arange(1,3)
@@ -421,7 +421,7 @@ def run_t4():
 	hzs = [100, 400, 1600, 6400, 25600, 102400]
 	seeds = [i for i in range(50)]
 	high_regrets = np.zeros((len(instance_nums), len(ths), len(hzs)))
-	fl = open('../task4_output.txt', 'w')
+	fl = open('../Outputs/task4_output.txt', 'w')
 	for ind in instance_nums:
 		for j,th in enumerate(ths):
 			for k,seed in enumerate(seeds):
@@ -441,7 +441,7 @@ def run_t4():
 			plt.xlabel('Horizon')
 			plt.ylabel('Average HIGHS-REGRET')
 			plt.title('Task4 Instance' + str(ind) + ' Threshold = ' + str(th))
-			plt.savefig('../Task4_Instance' + str(ind) + '_Threshold' + str(th)+'.jpeg')
+			plt.savefig('../plots/Task4_Instance' + str(ind) + '_Threshold' + str(th)+'.jpeg')
 
 
 if __name__ == '__main__':

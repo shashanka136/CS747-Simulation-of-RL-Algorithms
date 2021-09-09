@@ -72,7 +72,7 @@ if task == 1:
     plt.ylabel('Average Regret')
     plt.xscale('log')
     plt.legend()
-    plt.savefig(f'../Task1 -> Instance{ins}.jpeg')
+    plt.savefig(f'../plots/Task1 -> Instance{ins}.jpeg')
 
 
 
@@ -106,7 +106,7 @@ if task == 2:
   plt.xlabel('Scale')
   plt.ylabel('Average Regret')
   plt.legend()
-  plt.savefig('../Task2.jpeg')
+  plt.savefig('../plots/Task2.jpeg')
 
 
 if task == 3:
@@ -148,7 +148,7 @@ if task == 3:
     plt.xlabel('Horizon')
     plt.ylabel('Average Regret')
     plt.xscale('log')
-    plt.savefig(f'../Task3_Instance{ins}.jpeg')
+    plt.savefig(f'../plots/Task3_Instance{ins}.jpeg')
 
 
 if task == 4:
@@ -190,4 +190,4 @@ if task == 4:
       plt.xlabel('Horizon')
       plt.ylabel('Average HIGHS-REGRET')
       plt.xscale('log')
-      plt.savefig(f'../Task4_Instance{ins}_Threshold{th}.jpeg')
+      plt.savefig(f'../plots/Task4_Instance{ins}_Threshold{th}.jpeg')

@@ -1,4 +1,0 @@
-https://numpy.org/doc/stable/reference/index.html
-https://towardsdatascience.com/the-upper-confidence-bound-ucb-bandit-algorithm-c05c2bf4c13f
-https://stackoverflow.com/
-https://matplotlib.org/stable/api/
